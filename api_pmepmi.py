@@ -204,3 +204,4 @@ with PidFile(pidname="api_pmepmi"):
 ## Configuration Zabbix pour l'API du compteur pmepmi
 #UserParameter=custom.discovery.apipmepmi[*],/usr/bin/curl --silent "http://127.0.0.1:5000/zabbix_autoconf?type=$1"
 #UserParameter=custom.api.datalogging.pmepmi[*],/usr/bin/curl --silent "http://127.0.0.1:5000/get_donnee?tarif=$1&etiquette=$2"
+
