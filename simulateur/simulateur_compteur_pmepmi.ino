@@ -1,7 +1,7 @@
-# Droits d'auteur : HUSSON CONSULTING SAS - Liberasys
+/* # Droits d'auteur : HUSSON CONSULTING SAS - Liberasys
 # 2016/09
 # Donné en licence selon les termes de l’EUPL V.1.1 (EUPL : European Union Public Licence)
-# Voir EUPL V1.1 ici : http://ec.europa.eu/idabc/eupl.html
+# Voir EUPL V1.1 ici : http://ec.europa.eu/idabc/eupl.html */
 
 #include <avr/pgmspace.h>
 
