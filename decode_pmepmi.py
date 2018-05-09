@@ -624,7 +624,7 @@ class InterpretationTramesPmePmi():
                                             #print("Delta : " + nouveau_tableau_interprete[nouveau_tableau_interprete_entree_en_cours][etiquette + "_delta"][0])
                                         #else:
                                             ## choix : si on ne peut pas faire le delta, signifie qu'il n'y a pas de donnees
-                                            # on décide de laisser la valeur precedente dans le tableau.
+                                            # on decide de laisser la valeur precedente dans le tableau.
                                             #nouveau_tableau_interprete[nouveau_tableau_interprete_entree_en_cours][etiquette + "_delta"] = []
                                             #nouveau_tableau_interprete[nouveau_tableau_interprete_entree_en_cours][etiquette + "_delta"] = (None, None)
 
