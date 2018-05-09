@@ -622,10 +622,11 @@ class InterpretationTramesPmePmi():
                                             else:
                                                 nouveau_tableau_interprete[nouveau_tableau_interprete_entree_en_cours][etiquette + "_delta"] = (str(valeur_numerique_float_nouvelle - valeur_numerique_float_ancienne), unite)
                                             #print("Delta : " + nouveau_tableau_interprete[nouveau_tableau_interprete_entree_en_cours][etiquette + "_delta"][0])
-                                        else:
-                                            # choix : si on ne peut pas faire le delta, signifie qu'il n'y a pas de donnees
-                                            nouveau_tableau_interprete[nouveau_tableau_interprete_entree_en_cours][etiquette + "_delta"] = []
-                                            nouveau_tableau_interprete[nouveau_tableau_interprete_entree_en_cours][etiquette + "_delta"] = (None, None)
+                                        #else:
+                                            ## choix : si on ne peut pas faire le delta, signifie qu'il n'y a pas de donnees
+                                            # on décide de laisser la valeur precedente dans le tableau.
+                                            #nouveau_tableau_interprete[nouveau_tableau_interprete_entree_en_cours][etiquette + "_delta"] = []
+                                            #nouveau_tableau_interprete[nouveau_tableau_interprete_entree_en_cours][etiquette + "_delta"] = (None, None)
 
                 # Gestion du preavis
                 if not "CPT_PREAVIS" in nouveau_tableau_interprete["INDEP_TARIF"]:

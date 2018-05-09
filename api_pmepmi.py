@@ -12,6 +12,7 @@ import sys
 import copy
 import signal
 import atexit
+import logging
 from pid import PidFile
 
 import urllib
@@ -41,7 +42,7 @@ syslog.openlog(logoption=syslog.LOG_PID, facility=syslog.LOG_DAEMON)
 chemin_fichier_pid = "/run/api_pmepmi.pid"
 
 # activer la sortie fichier ou non
-sortie_fichier_active = True
+sortie_fichier_active = False
 
 # mode de fonctionnement : simulateur ou compteur
 mode_fonctionnement = "compteur"
@@ -193,6 +194,9 @@ with PidFile(pidname="api_pmepmi"):
     @app.route('/get_interpretation', methods = ['GET'])
     def api_cptpmepmi__get_dict_interpretation_trame():
         return jsonify(interpreteur_trames.get_dict_interpretation())
+
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
     
     # lancement API
     app.run(debug=False)
