@@ -32,7 +32,7 @@ from pickler import PicklesMyData
 # MAIN
 ########################################################################
 
-chemin_sauvegarde_interpretation = "/opt/api_pmepmi/sauvegarde_etat.pkl"
+chemin_sauvegarde_interpretation = "/opt/dl_decode_pmepmi/sauvegarde_etat.pkl"
 periode_sauvegarde = 600 # nbr de secondes entre deux sauvegardes
 
 # parametrage sortie syslog
