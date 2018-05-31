@@ -31,6 +31,10 @@ from pickler import PicklesMyData
 # CONFIGURATION
 ########################################################################
 
+## Permet l afichage des elements correct dans la console ainsi que
+# le dictionnaire des variables de sortie
+app_debug = False
+
 ## conteneur de variable pour fichier api_pmepmi.conf
 dicoval={}
 
@@ -49,15 +53,11 @@ required = {
             'dsrdtr':False,
             'timeout':1,
             'chemin_sauvegarde_interpretation':
-                "/opt/dl_decode_pmepmi/sauvegarde_etat.pkl",
+                '/opt/dl_decode_pmepmi/sauvegarde_etat.pkl',
             'periode_sauvegarde': 600,
-            'chemin_fichier_pid': "/run/api_pmepmi.pid",
+            'chemin_fichier_pid': '/run/api_pmepmi.pid',
             'sortie_fichier_active': False
             }
-
-## Permet l afichage des elements correct dans la console ainsi que
-# le dictionnaire des variables de sortie
-app_debug = False
 
 ## Affiche les elements corrects
 def affiche_correct_element(element):
@@ -65,7 +65,7 @@ def affiche_correct_element(element):
 
 ## Affiche les elements incorrects
 def affiche_incorrect_element(element):
-    print('FOUND* : "{}" INCORRECT VALUE= {}, use default value : {}'
+    print('FOUND* : "{}" INCORRECT VALUE = {}, use default value : {}'
         .format(element, dicoval[element], required[element]))
 
 ## Affiche les elements neccessaires a l execution mais ne se trouvant
@@ -106,8 +106,8 @@ def conversion_fichier(dicoval):
                         'False': False
                         }
 
-    for element in required: ## parcours des variables obligatoires
-        if element in dicoval: ## parcours des variables du ficher de conf
+    for element in required.keys(): ## parcours des variables obligatoires
+        if element in dicoval.keys(): ## parcours des variables du ficher de conf
             if element == 'bytesize':
                 if dicoval[element] in bytesize_mapping.keys():
                     if app_debug:
@@ -163,13 +163,19 @@ try:
     lignes = path.readlines()
     ## Traitement ligne par ligne
     for ligne in lignes:
-        ## Eimination des commentaires potentiels:
+        ## Elimination des commentaires potentiels:
         sp = ligne.split('#')[0]
         ## Separation variable/valeur:
         sp = sp.split('=')
         ## Si !egal a 2 il s'agit d'un commentaire ou une ligne vide:
-        if len(sp)==2:
-            dicoval[sp[0].strip()]=sp[1].strip()
+        if len(sp)>1:
+            nom_variable = sp[0].strip("\" ")
+            valeur_variable = '='.join(sp[1:])
+            valeur_variable = valeur_variable.strip("\" \n\r")
+            print(nom_variable + " = " + valeur_variable)
+            dicoval[nom_variable]=valeur_variable
+    print(dicoval)
+
     path.close()
     ## Conversion du fichier :
     conversion_fichier(dicoval)
