@@ -172,9 +172,7 @@ try:
             nom_variable = sp[0].strip("\" ")
             valeur_variable = '='.join(sp[1:])
             valeur_variable = valeur_variable.strip("\" \n\r")
-            print(nom_variable + " = " + valeur_variable)
             dicoval[nom_variable]=valeur_variable
-    print(dicoval)
 
     path.close()
     ## Conversion du fichier :

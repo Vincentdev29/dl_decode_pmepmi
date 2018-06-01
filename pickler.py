@@ -67,7 +67,7 @@ class PicklesMyData(threading.Thread):
                 print(exception.errno)
                 raise
 
-        # tries to create the file if it doesn not exists
+        # tries to create the file if it does not exists
         if not os.path.exists(f_path):
             try:
                 filedscr = open(f_path, 'w')
@@ -111,7 +111,7 @@ class PicklesMyData(threading.Thread):
             self._file.seek(0)
     
     def get_and_pickles_data(self):
-        """ Get datasef from callback and piclkes dataset """
+        """ Get dataset from callback and piclkes dataset """
         callback_data = None
         if self.__cb_function != None:
             callback_data = self.__cb_function()

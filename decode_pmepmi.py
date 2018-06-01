@@ -520,6 +520,9 @@ class InterpretationTramesPmePmi():
         #                 'TGPHI_s': ('-2.83', '')},
         #   'MESURES2': { 'CONTRAT': ('BT 4 SUP36', None)}}
         # boucle sur tous les groupes de la trame
+
+        #print(trame)
+
         for index, (etiquette,donnee)  in enumerate(trame):
             unite = None
             # Traitements specifiques pour champs structurants
@@ -550,8 +553,12 @@ class InterpretationTramesPmePmi():
                         dict_separation_mesures[mesure_en_cours][etiquette] = (donnee, None)
             else:
                 print("Attention, cas indetermine !!! etiquette/champ : " + etiquette + " // " + donnee)
+                print("Debut du programme sur une trame incomplete ?")
                 syslog.syslog(syslog.LOG_WARNING, "Attention, cas indetermine !!! etiquette/champ : " + etiquette + " // " + donnee)
+                syslog.syslog(syslog.LOG_WARNING, "Debut du programme sur une trame incomplete ?")
                 interpretation_valide = False
+                del dict_separation_mesures
+                return
         # Si on a pas de champ PTCOUR1, alors la trame n'est pas structurellement valide, on la rejettera
         if not "PTCOUR1" in dict_separation_mesures["MESURES1"]:
             interpretation_valide = False
