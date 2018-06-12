@@ -163,15 +163,16 @@ try:
     lignes = path.readlines()
     ## Traitement ligne par ligne
     for ligne in lignes:
-        ## Elimination des commentaires potentiels:
+        ## Elimination des commentaires potentiels en fin de ligne:
         sp = ligne.split('#')[0]
         ## Separation variable/valeur:
         sp = sp.split('=')
-        ## Si !egal a 2 il s'agit d'un commentaire ou une ligne vide:
+        ## Si on a plus de deux elements, alors on a une affectation valide
+        ##   et on la traite.
         if len(sp)>1:
-            nom_variable = sp[0].strip("\" ")
+            nom_variable = sp[0].strip("\"\' ")
             valeur_variable = '='.join(sp[1:])
-            valeur_variable = valeur_variable.strip("\" \n\r")
+            valeur_variable = valeur_variable.strip("\"\' \n\r")
             dicoval[nom_variable]=valeur_variable
 
     path.close()
