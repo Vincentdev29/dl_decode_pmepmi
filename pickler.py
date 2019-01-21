@@ -6,7 +6,6 @@
 import syslog
 import threading
 import time
-import syslog
 import os
 import errno
 import pickle
@@ -56,7 +55,7 @@ class PicklesMyData(threading.Thread):
     def __make_sure_file_path_exists(self, f_path):
         """ Makes sure a file exists, creates directories and file if not"""
         filedscr = None
-        
+
         # tries to create directories
         try:
             os.makedirs(os.path.dirname(f_path))
@@ -75,7 +74,7 @@ class PicklesMyData(threading.Thread):
             except e as exception:
                 print("Error while creating output file : " + f_path + " : " + str(e))
                 syslog.syslog(syslog.LOG_CRIT, "Error while creating output file : " + f_path + " : " + str(e))
-                
+
         # tries to open the file
         try:
             filedscr = open(f_path, 'r+b')
@@ -84,23 +83,23 @@ class PicklesMyData(threading.Thread):
             syslog.syslog(syslog.LOG_CRIT, "Error opening output file : " + f_path + " : " + str(e))
         else:
             filedscr.close()
-    
+
     def set_callback(self, fonction):
         if fonction != None:
             self.__cb_function = fonction
-    
+
     def get_data(self):
         """ Get the object data """
         if  self.__get_mutex():
             return copy.deepcopy(self._my_data)
             self.__release_mutex()
-  
+
     def set_data(self, dataset):
         """ Set the data to pickle """
         if  self.__get_mutex():
             self._my_data = copy.deepcopy(dataset)
             self.__release_mutex()
-    
+
     def pickles_data(self):
         """ Pickels data to file """
         if self._my_data != None:
@@ -109,7 +108,7 @@ class PicklesMyData(threading.Thread):
                 pickle.dump(self._my_data, self._file)
                 self.__release_mutex()
             self._file.seek(0)
-    
+
     def get_and_pickles_data(self):
         """ Get dataset from callback and piclkes dataset """
         callback_data = None
@@ -160,11 +159,11 @@ class PicklesMyData(threading.Thread):
 
 if __name__ == "__main__":
     countdown=0
-    
+
     def cb_gen_dataset():
         favorite_color = { "lion": "yellow", "kitty": "red", "time": (time.time(), "epoch") }
         return favorite_color
-    
+
     pickeler = PicklesMyData("/tmp/plop/plop.pkl", 2)
     pickeler.set_callback(cb_gen_dataset)
 
@@ -202,8 +201,3 @@ if __name__ == "__main__":
     print(pickeler.get_data())
     time.sleep(0.2)
     pickeler.stop()
-
-    
-
-
-

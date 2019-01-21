@@ -167,7 +167,7 @@ try:
         sp = ligne.split('#')[0]
         ## Separation variable/valeur:
         sp = sp.split('=')
-        ## Si on a plus de deux elements, alors on a une affectation valide
+        ## Si on a plus d'un element, alors on a une affectation valide
         ##   et on la traite.
         if len(sp)>1:
             nom_variable = sp[0].strip("\"\' ")
@@ -313,7 +313,7 @@ with PidFile(pidname="api_pmepmi"):
     decode_pmepmi.set_cb_nouvelle_trame_recue_tt_trame(interpreteur_trames.interpreter_trame)
     decode_pmepmi.set_cb_debut_interruption(cb_debut_interruption)
     decode_pmepmi.set_cb_fin_interruption(cb_fin_interruption)
-    decode_pmepmi.set_cf_mauvaise_trame_recue(cb_mauvaise_trame_recue)
+    decode_pmepmi.set_cb_mauvaise_trame_recue(cb_mauvaise_trame_recue)
     pickles_etat.set_callback(cb_sauvegarde_etat)
 
     # lecture de l'etat sauvegarde et demarrage de la sauvegarde periodique :

@@ -51,7 +51,7 @@ if lecture_serie_active == True:
                                    rtscts=False,
                                    dsrdtr=False,
                                    timeout=1)
-                                   
+
     #    lien_serie = serial.Serial(port = '/dev/ttyUSB0',
     #                               baudrate = 1200,
     #                               bytesize=serial.SEVENBITS,
@@ -61,7 +61,7 @@ if lecture_serie_active == True:
     #                               rtscts=False,
     #                               dsrdtr=False,
     #                               timeout=1)
-                                   
+
     #    lien_serie = serial.Serial(port = '/dev/ttyACM0',
     #                               baudrate = 57600,
     #                               timeout=1)
@@ -106,13 +106,13 @@ def cb_mauvaise_trame_recue():
 def cb_nouvelle_trame_recue():
     tableau_des_trames.append(copy.deepcopy(decode_pmepmi.get_derniere_trame_valide()))
 
-            
+
 # affectation des callbacks :
 interpreteur_trames.set_cb_nouvelle_interpretation_tt_interpretation(cb_nouvelle_trame_interpretee_tt_interpretation)
 decode_pmepmi.set_cb_nouvelle_trame_recue_tt_trame(interpreteur_trames.interpreter_trame)
 decode_pmepmi.set_cb_fin_interruption(cb_fin_interruption)
 decode_pmepmi.set_cb_debut_interruption(cb_debut_interruption)
-decode_pmepmi.set_cf_mauvaise_trame_recue(cb_mauvaise_trame_recue)
+decode_pmepmi.set_cb_mauvaise_trame_recue(cb_mauvaise_trame_recue)
 decode_pmepmi.set_cb_nouvelle_trame_recue(cb_nouvelle_trame_recue)
 
 
@@ -164,5 +164,3 @@ def api_cptpmepmi__get_donnee():
         return "Donner les bons parametres  tarif, etiquette"
 
 app.run(debug=True)
-
-
