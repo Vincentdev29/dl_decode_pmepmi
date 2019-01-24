@@ -26,7 +26,7 @@ class LecturePortSerie(threading.Thread):
       - lien_serie : instance de la classe serial
       - callback : callback appele quand un nouvel octet est recu
     """
-    def __init__(self, lien_serie_initialise, callback): 
+    def __init__(self, lien_serie_initialise, callback):
         threading.Thread.__init__(self)
         self.setDaemon(True)
         self._lien_serie = lien_serie_initialise
@@ -48,7 +48,7 @@ class LecturePortSerie(threading.Thread):
         self._running = False
         self.__del__()
         if self._lien_serie != None:
-            self._lien_serie.close()  
+            self._lien_serie.close()
 
 
 ########################################################################
@@ -60,7 +60,7 @@ class LectureFichier(threading.Thread):
       - chemin_fichier : chemin complet du fichier a lire
       - callback : callback appele quand un nouvel octet est lu
     """
-    def __init__(self, chemin_fichier, callback): 
+    def __init__(self, chemin_fichier, callback):
         threading.Thread.__init__(self)
         self.setDaemon(True)
         self._chemin_fichier = chemin_fichier
@@ -116,7 +116,7 @@ class DecodeCompteurPmePmi():
                                     self._CHAR_CR : "CR",
                                     self._CHAR_EOT : "EOT",
                                     self._CHAR_SEPARATEUR : "ESPACE"}
-                                    
+
         self._ID_ETAT_ATTENTE_DEBUT_TRAME = 1
         self._ID_ETAT_ATTENTE_DEBUT_GROUPE = 2
         self._ID_ETAT_TRAITEMENT_GROUPE = 3
@@ -131,14 +131,15 @@ class DecodeCompteurPmePmi():
 
         self._etat = self._ID_ETAT_ATTENTE_DEBUT_TRAME
         self._etat_precedent = self._ID_ETAT_ATTENTE_DEBUT_TRAME
-        
+
         self._dernier_octet = " "
         self._tampon_groupe = ""
         self._tampon_interruption = ""
         self._tampon_derniere_interruption = ""
 
         self._checksums_groupes_bons = False
-        
+
+
         # tableau de la trame, de la forme :
         #[ ('ADS', '041436028024'),
         #  ('MESURES1', 'BT 4 SUP36'),
@@ -153,7 +154,7 @@ class DecodeCompteurPmePmi():
         self.__cb_mauvaise_trame_recue = False
         self.__cb_nouvelle_trame_recue = False
         self.__cb_nouvelle_trame_recue_tt_trame = False
-        
+
         # Initialisation des dictionnaires de traitement de machine a etats
         self.__f_init_dict_transitions()
         self.__f_init_dict_fonctions_etats()
@@ -161,13 +162,14 @@ class DecodeCompteurPmePmi():
     # Definition des fonctions d'affectation de callbacks
     def set_cb_debut_interruption(self, fonction):
         self.__cb_debut_interruption = fonction
-        
+
     def set_cb_fin_interruption(self, fonction):
         self.__cb_fin_interruption = fonction
-        
-    def set_cf_mauvaise_trame_recue(self, fonction):
+
+    def set_cb_mauvaise_trame_recue(self, fonction):
+        """ Affectation du callback sur mauvaise trame recue """
         self.__cb_mauvaise_trame_recue = fonction
-        
+
     def set_cb_nouvelle_trame_recue(self, fonction):
         self.__cb_nouvelle_trame_recue = fonction
 
@@ -177,7 +179,7 @@ class DecodeCompteurPmePmi():
     def get_derniere_trame_valide(self):
         """ Obtention de la derniere trame valide """
         return self._t_derniere_trame_valide
-    
+
     def get_tampon_interruption(self):
         """ Obtention du tampon d'interruption """
         return self._tampon_derniere_interruption
@@ -281,10 +283,6 @@ class DecodeCompteurPmePmi():
         if self.__cb_fin_interruption != False:
             self.__cb_fin_interruption()
 
-    def set_cf_mauvaise_trame_recue(self, fonction):
-        """ Affectation du callback sur mauvaise trame recue """
-        self.__cb_mauvaise_trame_recue = fonction
-        
     def __f_traitement_fin_de_trame(self):
         """ Traitement sur fin de trame """
         #print("FIN DE TRAME")
@@ -312,7 +310,7 @@ class DecodeCompteurPmePmi():
         self._checksums_groupes_bons = True
         del self._t_trame_en_cours[:]
         self._t_trame_en_cours = []
-           
+
     def __f_raz_tampon_groupe(self):
         """ Remise a zero du tampon de groupe """
         #print("RAZ tampon groupe")
@@ -340,7 +338,7 @@ class DecodeCompteurPmePmi():
         #else:
         #    char_debug = self._dernier_octet
         #print(str(self._dict_etat[self._etat]) + " : " + char_debug + " 0x" + str(self._dernier_octet.encode('hex')))
-        
+
         # machine a etat, appelle le dictionnaire de transition, sinon la fonction de traitement de l'etat en cours
         if self._dernier_octet in self._dict_transitions[self._etat]:
             #print("Transition detectee : " + self._dict_etat[self._etat] + " -> " + self._dict_etat[(self._dict_transitions[self._etat][self._dernier_octet][0])])
@@ -370,7 +368,7 @@ class DecodeCompteurPmePmi():
         #print("Tampon de groupe : " + self._tampon_groupe)
         # on a besoin de 3 char au minimum
         if (len(self._tampon_groupe) > 3) \
-           and (self._checksums_groupes_bons == True): 
+           and (self._checksums_groupes_bons == True):
             checksum_char = self._tampon_groupe[-1:]
             #print("Caractere checksum : " + checksum_char)
             checksum_calcul_chaine = self._tampon_groupe[:-2]
@@ -394,7 +392,7 @@ class InterpretationTramesPmePmi():
     """
     Classe d'interpretation des trames des compteurs EDF type PME-PMI
     """
-    
+
     def __init__(self):
         # self._dict_interprete, de la forme :
         # { 'HPE': { 'EAP-1_s': ('9256', 'kWh'),
@@ -406,22 +404,22 @@ class InterpretationTramesPmePmi():
         #             ...
         #            'TGPHI_s': ('-2.83', '')}}
         self._dict_interprete = {}
-        
+
         self._periode_tarifaire_precedente = None
         self._preavis_etat_precedent = False
         self._epoch_derniere_trame_valide = 0
-        
+
         # Mutex pour proteger l'acces aux donnes self._dict_interprete et self._periode_tarifaire_precedente
         self._mutex_donnees_actif = False
-        
+
         self._cb_nouvelle_interpretation = None
         self._cb_nouvelle_interpretation_tt_interpretation = None
-        
+
         # Compteur de trames invalidees par le decodeur
         self._nbr_trames_invalides = 0
         # tableau de configuration des champs pris en compte
         # <etiquette> : (<est fonction de periode tarifaire>, <est numerique>, <faire le delta / non croissant continu>, <description>, <periode mesures zabbix>, <type donnee zabbix>)
-        # <type donnee zabbix> = 
+        # <type donnee zabbix> =
         self._zbxtype_int = "int"
         self._zbxtype_float = "float"
         self._zbxtype_char = "char"
@@ -510,7 +508,7 @@ class InterpretationTramesPmePmi():
         total_conso_indep_tarif_s = 0
         total_conso_indep_tarif_i = 0
         cpt_depassement = 0
-        
+
         # generation d'un dictionnaire separant MESURE1 et MESURE 2 du type :
         # { 'ID_COMPTEUR': ('041436028024', None),
         #   'MESURES1': { 'CONTRAT': ('BT 4 SUP36', None),
@@ -590,7 +588,7 @@ class InterpretationTramesPmePmi():
                 # MAJ epoch
                 epoch_ancienne_trame_valide = self._epoch_derniere_trame_valide
                 self._epoch_derniere_trame_valide = time.time()
-                
+
                 # ajoute des entrees manquantes, affectation specifique de l'ID compteur et de l'abonnement
                 if not "INDEP_TARIF" in nouveau_tableau_interprete:
                     nouveau_tableau_interprete["INDEP_TARIF"] = {}
@@ -648,11 +646,11 @@ class InterpretationTramesPmePmi():
                         self._preavis_etat_precedent = False
                     else:
                         pass
-                
+
                 # Creation etiquette nbr interruptions si besoin
                 if not "CPT_INTERRUPTIONS" in nouveau_tableau_interprete["INDEP_TARIF"]:
                     nouveau_tableau_interprete["INDEP_TARIF"]["CPT_INTERRUPTIONS"] = ("0", None)
-                
+
                 # Creation etiquette nbr trames invalides si besoin
                 if not "CPT_TRAMES_INVALIDES" in nouveau_tableau_interprete["INDEP_TARIF"] :
                     nouveau_tableau_interprete["INDEP_TARIF"]["CPT_TRAMES_INVALIDES"] = ("0", None)
@@ -670,7 +668,7 @@ class InterpretationTramesPmePmi():
                     nouveau_tableau_interprete["INDEP_TARIF"]["CONSO_TOTALE_i"] = (None, None)
                 nouveau_tableau_interprete["INDEP_TARIF"]["CONSO_TOTALE_s"] = (str(total_conso_indep_tarif_s), None)
                 nouveau_tableau_interprete["INDEP_TARIF"]["CONSO_TOTALE_i"] = (str(total_conso_indep_tarif_i), None)
-               
+
                 # Au final, on recopie le nouveau tableau interprete, et on met a jour la periode tarifaire actuelle
                 del self._dict_interprete
                 self._dict_interprete = copy.deepcopy(nouveau_tableau_interprete)
@@ -704,14 +702,14 @@ class InterpretationTramesPmePmi():
             applique sur l'interpretation - passee en parametre du callback
         """
         self._cb_nouvelle_interpretation_tt_interpretation = fonction
-    
+
     def incrementer_compteur_interruptions(self):
         """ Incrementer le compteur d'interruptions """
         #print("Incrementer le compteur d'interruptions")
         CPT_INTERRUPTIONSerruptions = 0
         if self.__obtenir_mutex_donnees() == True:
             if not "INDEP_TARIF" in self._dict_interprete:
-                self._dict_interprete["INDEP_TARIF"] = (None, None)
+                self._dict_interprete["INDEP_TARIF"] = {}
             if not "CPT_INTERRUPTIONS" in self._dict_interprete["INDEP_TARIF"]:
                 self._dict_interprete["INDEP_TARIF"]["CPT_INTERRUPTIONS"] = ("0", None)
             CPT_INTERRUPTIONSerruptions = int(self._dict_interprete["INDEP_TARIF"]["CPT_INTERRUPTIONS"][0])
@@ -725,8 +723,8 @@ class InterpretationTramesPmePmi():
         cpt_trames_invalides = 0
         if self.__obtenir_mutex_donnees() == True:
             if not "INDEP_TARIF" in self._dict_interprete:
-                self._dict_interprete["INDEP_TARIF"] = (None, None)
-            if not "CPT_INTERRUPTIONS" in self._dict_interprete["INDEP_TARIF"]:
+                self._dict_interprete["INDEP_TARIF"] = {}
+            if not "CPT_TRAMES_INVALIDES" in self._dict_interprete["INDEP_TARIF"]:
                 self._dict_interprete["INDEP_TARIF"]["CPT_TRAMES_INVALIDES"] = ("0", None)
             cpt_trames_invalides = int(self._dict_interprete["INDEP_TARIF"]["CPT_TRAMES_INVALIDES"][0])
             cpt_trames_invalides = cpt_trames_invalides +1
@@ -750,13 +748,13 @@ class InterpretationTramesPmePmi():
                 #print("Mutex obtenu")
             time.sleep(0.2)
         return mutex_obtenu
-    
-    
+
+
     def __relacher_mutex_donnees(self):
         """ Relache de l'exclusivite sur les donnees """
         self._mutex_donnees_actif = False
         #print("Mutex relache")
-    
+
     def get_donnee(self, ptarif, etiquette):
         """ Obtenir une donnee
         arguments :
@@ -776,10 +774,10 @@ class InterpretationTramesPmePmi():
         else:
             sortie = (None, None)
         return(sortie)
-    
+
     def get_autoconf_zabbix(self, zbx_type=""):
         """ Obtenir l'autoconfiguration Zabbix """
-        # le tableau d'autoconf zabbix est de la forme : 
+        # le tableau d'autoconf zabbix est de la forme :
         #{ 'data': [ { '{#DESCRIPTION}': 'Puissance totale injectee, tous tarifs confondus',
         #              '{#ETIQUETTE}': 'CONSO_TOTALE_i',
         #              '{#PTARIF}': 'INDEP_TARIF',
@@ -804,7 +802,7 @@ class InterpretationTramesPmePmi():
         unite = None
         description = None
         periode = None
-        
+
         # On demande le mutex et on boucle sur les entrees du tableau de trames interpretees
         if self.__obtenir_mutex_donnees() == True:
             for tarif in self._dict_interprete:
@@ -874,4 +872,3 @@ class SortieFichier():
             syslog.syslog(syslog.LOG_WARNING, "Probleme a l'ouverture du fichier de sortie")
     def nouvel_octet(self, nouvel_octet):
         self._fichier_sortie.write(to_bytes(nouvel_octet))
-

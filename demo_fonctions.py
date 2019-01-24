@@ -93,7 +93,7 @@ with PidFile(pidname="api_pmepmi"):
         #                            rtscts=False,
         #                            dsrdtr=False,
         #                            timeout=1)
-        #                            
+        #
             lien_serie = serial.Serial(port = '/dev/ttyUSB0',
                                        baudrate = 1200,
                                        bytesize=serial.SEVENBITS,
@@ -103,7 +103,7 @@ with PidFile(pidname="api_pmepmi"):
                                        rtscts=False,
                                        dsrdtr=False,
                                        timeout=1)
-                                    
+
         #    lien_serie = serial.Serial(port = '/dev/ttyACM0',
         #                               baudrate = 57600,
         #                               timeout=1)
@@ -112,45 +112,45 @@ with PidFile(pidname="api_pmepmi"):
         except serial.SerialException, e:
             print("Probleme avec le port serie : " + str(e))
             syslog.syslog(syslog.LOG_WARNING, "Probleme avec le port serie : " + str(e))
-    
+
     # Instanciation sortie fichier si besoin
     if sortie_fichier_active == True:
         sortie_fichier = SortieFichier()
-    
+
     # Instanciation API si besoin
     if api_cptpmepmi == True:
         app = Flask(__name__)
-    
-    # Instanciation sauvegarde d'etat si besoin 
+
+    # Instanciation sauvegarde d'etat si besoin
     if sauvegarde_etat == True:
         pickles_etat = PicklesMyData(chemin_sauvegarde_interpretation, periode_sauvegarde)
-    
+
     # Instanciation des objets de decodage et d'interpretation
     decode_pmepmi = DecodeCompteurPmePmi()
     interpreteur_trames = InterpretationTramesPmePmi()
-    
+
     # Callback nouvelle trame recue
     def cb_nouvelle_trame_recue():
         tableau_des_trames.append(copy.deepcopy(decode_pmepmi.get_derniere_trame_valide()))
         print("nouvelle trame recue")
-        
+
     # Callback nouvelle trame interpretee
     # copie la nouvelle trame interpretee dans le tableau des trame interpretees
     def cb_nouvelle_trame_interpretee_tt_interpretation(tableau_trame_interpretee):
         tableau_des_interpretations.append(copy.deepcopy(tableau_trame_interpretee))
         print("nouvelle trame interpretee")
-    
+
     # Callback appele quand un octet est recu
     def cb_nouvel_octet_recu(octet_recu):
         decode_pmepmi.nouvel_octet(serial.to_bytes(octet_recu))
         if sortie_fichier_active == True:
             sortie_fichier.nouvel_octet(serial.to_bytes(octet_recu))
-    
+
     # Callback debut interruption
     def cb_debut_interruption():
         print("INTERRUPTION DEBUT !!!!!!")
         interpreteur_trames.incrementer_compteur_interruptions()
-    
+
     # callback fin interruption
     def cb_fin_interruption():
         dump_interruption = decode_pmepmi.get_tampon_interruption()
@@ -159,17 +159,17 @@ with PidFile(pidname="api_pmepmi"):
         syslog.syslog(syslog.LOG_NOTICE, 'Interruption :')
         syslog.syslog(syslog.LOG_NOTICE, dump_interruption)
         print("INTERRUPTION FIN")
-    
+
     # callback mauvaise trame recue
     def cb_mauvaise_trame_recue():
         print("Trame invalide recue")
         syslog.syslog(syslog.LOG_NOTICE, "Trame invalide recue")
         interpreteur_trames.incrementer_compteur_trames_invalides()
-    
+
     # Callback pour la sauvegarde d'etats
     def cb_sauvegarde_etat():
         return interpreteur_trames.get_dict_interpretation()
-    
+
     # affectation des callbacks :
     if affichage_trames_gui_active == True:
         decode_pmepmi.set_cb_nouvelle_trame_recue(cb_nouvelle_trame_recue)
@@ -178,24 +178,24 @@ with PidFile(pidname="api_pmepmi"):
     decode_pmepmi.set_cb_nouvelle_trame_recue_tt_trame(interpreteur_trames.interpreter_trame)
     decode_pmepmi.set_cb_debut_interruption(cb_debut_interruption)
     decode_pmepmi.set_cb_fin_interruption(cb_fin_interruption)
-    decode_pmepmi.set_cf_mauvaise_trame_recue(cb_mauvaise_trame_recue)
+    decode_pmepmi.set_cb_mauvaise_trame_recue(cb_mauvaise_trame_recue)
     if sauvegarde_etat == True:
         pickles_etat.set_callback(cb_sauvegarde_etat)
-        
+
     # lecture de l'etat sauvegarde et demarrage de la sauvegarde periodique si besoin :
     if sauvegarde_etat == True:
         etat_sauve = pickles_etat.get_data()
         if etat_sauve != None :
             interpreteur_trames.charger_etat_interpretation(pickles_etat.get_data())
         pickles_etat.start()
-    
+
     # Lecture sur port serie
     if lecture_serie_active == True:
         # instanciation thread serie
         lecture_serie = LecturePortSerie(lien_serie, cb_nouvel_octet_recu)
         # lancement thread
         lecture_serie.start()
-    
+
     # Lecture depuis fichier
     if lecture_fichier_active == True:
         # instanciation thread lecture fichier
@@ -203,7 +203,7 @@ with PidFile(pidname="api_pmepmi"):
         # lancement thread
         print("Lancement du thread de decodage du fichier " + sys.argv[1])
         lecture_fichier.start()
-    
+
     # Sortie GUI d'affichage
     if affichage_trames_gui_active == True:
         app = QtGui.QApplication(sys.argv)
@@ -213,8 +213,8 @@ with PidFile(pidname="api_pmepmi"):
         app = QtGui.QApplication(sys.argv)
         gui_affichage = AfficheInterpretations(tableau_des_interpretations)
         sys.exit(app.exec_())
-    
-    
+
+
     if api_cptpmepmi == True:
         @app.errorhandler(404)
         def page_not_found(error):
@@ -229,12 +229,12 @@ with PidFile(pidname="api_pmepmi"):
             description = "obtenir l'interpretation complete des trames"
             texte = texte + "<a href=" + url + ">" + url + "</a>" + "   ::   description<br/>"
             return texte
-        
+
         # API autoconfiguration Zabbix (LLD)
         @app.route('/zabbix_autoconf', methods = ['GET'])
         def api_cptpmepmi__zabbix_autoconf():
             return jsonify(interpreteur_trames.get_autoconf_zabbix())
-    
+
         # API de recuperation d'une donnee
         @app.route('/get_donnee', methods = ['GET'])
         def api_cptpmepmi__get_donnee():
@@ -247,12 +247,10 @@ with PidFile(pidname="api_pmepmi"):
                     return interpreteur_trames.get_donnee(request.args['tarif'],request.args['etiquette'])
             else:
                 return "Donner les bons parametres : tarif=, etiquette="
-    
+
         # API d'obtention d'un dump du dictionnaire d'interpretation des trames
         @app.route('/get_interpretation', methods = ['GET'])
         def api_cptpmepmi__get_dict_interpretation_trame():
             return jsonify(interpreteur_trames.get_dict_interpretation())
-    
-        app.run(debug=False)
-    
 
+        app.run(debug=False)
