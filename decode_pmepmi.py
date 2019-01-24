@@ -364,7 +364,6 @@ class DecodeCompteurPmePmi():
         checksum_char=""
         checksum_calcul_chaine=""
         checksum_calcul_resultat=""
-        premiere_occurence_separateur=0
         #print("Tampon de groupe : " + self._tampon_groupe)
         # on a besoin de 3 char au minimum
         if (len(self._tampon_groupe) > 3) \
@@ -376,10 +375,10 @@ class DecodeCompteurPmePmi():
             checksum_calcul_resultat = self.calcule_checksum(checksum_calcul_chaine)
             #print("Checksum calcule : " + checksum_calcul_resultat)
             if checksum_char == checksum_calcul_resultat:
-                premiere_occurence_separateur = checksum_calcul_chaine.find(self._CHAR_SEPARATEUR)
-                champ_etiquette = checksum_calcul_chaine[0:premiere_occurence_separateur]
-                champ_donnee = checksum_calcul_chaine[premiere_occurence_separateur+1:]
-                #print("Groupe lu : " + champ_etiquette + " = " + champ_donnee)
+                groupe_caractere_separe = checksum_calcul_chaine.split(self._CHAR_SEPARATEUR)
+                champ_etiquette = groupe_caractere_separe[0]
+                champ_donnee = groupe_caractere_separe[1]
+                #print("Split chaine selon caractere separateur : " + str(groupe_caractere_separe)
                 self._t_trame_en_cours.append((champ_etiquette, champ_donnee))
             else:
                 self._checksums_groupes_bons = False
