@@ -558,7 +558,9 @@ class InterpretationTramesPmePmi():
                 del dict_separation_mesures
                 return
         # Si on a pas de champ PTCOUR1 ou pas le champ ID_COMPTEUR, alors la trame n'est pas structurellement valide, on la rejettera
-        if (not "PTCOUR1" in dict_separation_mesures["MESURES1"]) or (not "ID_COMPTEUR" in dict_separation_mesures):
+        if (not "MESURES1" in dict_separation_mesures) or \
+           (not "PTCOUR1" in dict_separation_mesures["MESURES1"]) or \
+           (not "ID_COMPTEUR" in dict_separation_mesures):
             interpretation_valide = False
         else:
             # Determination de la periode tarifaire en cours, en fonction de l'activation du tarif dynamique
